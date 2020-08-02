@@ -1,6 +1,6 @@
 ---
-name: PMO Action Items (FedRAMP PMO Use Only)
-about: Capture action items intended for follow-up by the FedRAMP PMO.
+name: PMO Action Item (FedRAMP PMO Use Only)
+about: Capture an action item intended for follow-up by the FedRAMP PMO.
 title: ''
 labels: ''
 assignees: brianrufgsa
@@ -16,9 +16,15 @@ assignees: brianrufgsa
 
 **This relates to ...**
   - [ ] the **FedRAMP OSCAL Registry** (Excel File)
-  - [ ] the **Guide to OSCAL-based FedRAMP System Security Plans** (PDF)
-  - [ ] the **FedRAMP SSP OSCAL Template** (JSON Format)
-  - [ ] the **FedRAMP SSP OSCAL Template** (XML Format)
+  - [ ] the **Guide to OSCAL-based FedRAMP Content** (PDF)
+  - [ ] the **Guide to OSCAL-based FedRAMP System Security Plans (SSP)** (PDF)
+  - [ ] the **Guide to OSCAL-based FedRAMP Security Assessment Plans (SAP)** (PDF)
+  - [ ] the **Guide to OSCAL-based FedRAMP Security Assessment Reports (SAR)** (PDF)
+  - [ ] the **Guide to OSCAL-based FedRAMP Plan of Action and Milestones (POA&M)** (PDF)
+  - [ ] the **FedRAMP SSP OSCAL Template** (JSON or XML Format)
+  - [ ] the **FedRAMP SAP OSCAL Template** (JSON or XML Format)
+  - [ ] the **FedRAMP SAR OSCAL Template** (JSON or XML Format)
+  - [ ] the **FedRAMP POA&M OSCAL Template** (JSON or XML Format)
   - [ ] **General/Overall**
   - [ ] **Other**
 
@@ -44,7 +50,6 @@ NOTE: For issues related to the OSCAL syntax itself, please create or add to an 
 - [ ] A Pull Request (PR) is submitted that fully addresses the goals of this User Story. This issue is referenced in the PR.
 
 {The items above are general acceptance criteria for all User Stories. Please describe anything else that must be completed for this issue to be considered resolved.}
-
 
 
 ## Other Comments
