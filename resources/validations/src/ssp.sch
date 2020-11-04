@@ -5,6 +5,7 @@
 <sch:ns prefix="f"     uri="https://fedramp.gov/ns/oscal"/>
 <sch:ns prefix="o"     uri="http://csrc.nist.gov/ns/oscal/1.0"/>
 <sch:ns prefix="oscal" uri="http://csrc.nist.gov/ns/oscal/1.0"/>
+<sch:ns prefix="lv"     uri="local-validations"/>
 
 <sch:title>FedRAMP System Security Plan Validations</sch:title>
 
@@ -52,6 +53,24 @@
 <xsl:key name="profile-lookup" match="profile" use="@level"/>
 <xsl:variable name="selected-profile-href" select="key('profile-lookup', $selected-sensitivty-level, $profile-map)/@href"/>
 <xsl:variable name="selected-profile" select="doc(resolve-uri($selected-profile-href))"/>
+
+<xsl:function name="lv:validate-allowed-values">
+    <xsl:param name="value-set" as="element()" />
+    <xsl:param name="value" as="xs:anyAtomicType" />
+    <!-- If allow-other is set, anything is valid. -->
+    <xsl:if test="$value-set/f:allowed-values/@allow-other='yes'">
+        <xsl:value-of select="'good'" />
+    </xsl:if>
+    <xsl:choose>
+        <xsl:when test="$value = $value-set/f:allowed-values/f:enum/@value">
+            <xsl:value-of select="'good'" />
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="'bad'" />
+        </xsl:otherwise>
+    </xsl:choose>
+    <!-- "$value-set/f:allowed-values/f:enum/@value" -->
+</xsl:function>
 
 <sch:pattern>
     <sch:rule context="/">
