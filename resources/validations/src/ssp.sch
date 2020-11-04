@@ -69,7 +69,6 @@
             <xsl:value-of select="'bad'" />
         </xsl:otherwise>
     </xsl:choose>
-    <!-- "$value-set/f:allowed-values/f:enum/@value" -->
 </xsl:function>
 
 <sch:pattern>
