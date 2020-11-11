@@ -60,11 +60,12 @@
     <xsl:param name="value-set" as="element()" />
     <xsl:param name="value" as="xs:anyAtomicType" />
     <!-- If allow-other is set, anything is valid. -->
-    <xsl:if test="$value-set/f:allowed-values/@allow-other='yes'"/>
+    <xsl:if test="$value-set/*[local-name() = 'allowed-values']/@allow-other='yes'"/>
     <xsl:choose>
-        <xsl:when test="$value = $value-set/f:allowed-values/f:enum/@value"/>
+        <xsl:variable name="$values" select="$value-set/*[local-name() = 'allowed-values']/*[local-name() = 'enum']/@value"/>
+        <xsl:when test="$value = $values"/>
         <xsl:otherwise>
-            <xsl:value-of select="$value-set/f:allowed-values/f:enum/@value" />
+            <xsl:value-of select="$values" />
         </xsl:otherwise>
     </xsl:choose>
 </xsl:function>
@@ -72,7 +73,7 @@
 <sch:pattern>
     <sch:rule context="/">
         <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
-        <sch:report id="invalid-values-test" test="true()"><sch:value-of select="lv:validate-values($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], $selected-sensitivty-level)"/></sch:report>
+        <sch:report id="invalid-values-test" test="true()"><sch:value-of select="lv:validate-values($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], 'invalid')"/></sch:report>
     </sch:rule>
 </sch:pattern>
 
