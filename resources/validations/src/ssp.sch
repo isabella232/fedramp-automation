@@ -73,7 +73,7 @@
 <sch:pattern>
     <sch:rule context="/">
         <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
-        <sch:report id="invalid-values-test" test="true()"><sch:value-of select="lv:validate-values($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], 'invalid')"/></sch:report>
+        <sch:report id="invalid-values-test" test="true()"><sch:value-of select="lv:validate-values($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], $selected-sensitivty-level)"/></sch:report>
     </sch:rule>
 </sch:pattern>
 
