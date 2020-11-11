@@ -73,7 +73,7 @@
 
 <sch:pattern>
     <sch:rule context="/">
-        <sch:assert role="error" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
+        <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
     </sch:rule>
 </sch:pattern>
 
