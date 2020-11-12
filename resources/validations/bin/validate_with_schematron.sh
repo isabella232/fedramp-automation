@@ -79,8 +79,7 @@ fi
 
 #if version not specified default
 SAXON_VERSION=${SAXON_VERSION:-10.2}
-SAXON_OPTS="${SAXON_OPTS:-allow-foreign=true}"
-BASE_DIR="${BASE_DIR:-.}"
+SAXON_OPTS="${SAXON_OPTS:-allow-foreign=true generate-paths=true diagnose=true}"
 
 echo "using saxon version ${SAXON_VERSION}"
 
