@@ -82,7 +82,7 @@ rm -rf target/{*.sch,*.xsl};
 
 SAXON_VERSION=$2
 SAXON_VERSION=${SAXON_VERSION:-10.2}
-SAXON_OPTS="${SAXON_OPTS:-allow-foreign=true generate-paths=true diagnose=true}"
+SAXON_OPTS="${SAXON_OPTS:-allow-foreign=true diagnose=true}"
 
 echo "using saxon version ${SAXON_VERSION}"
 
