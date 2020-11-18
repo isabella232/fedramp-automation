@@ -77,12 +77,10 @@ else
     echo "doc requested to be validated: ${DOC_TO_VALIDATE}"
 fi
 
-# Delete pre-existing XSLT stylesheets and intermediate Schematron files.
-rm -rf target/{*.sch,*.xsl};
-
-SAXON_VERSION=$2
+#if version not specified default
 SAXON_VERSION=${SAXON_VERSION:-10.2}
 SAXON_OPTS="${SAXON_OPTS:-allow-foreign=true diagnose=true}"
+BASE_DIR="${BASE_DIR:-.}"
 
 echo "using saxon version ${SAXON_VERSION}"
 
