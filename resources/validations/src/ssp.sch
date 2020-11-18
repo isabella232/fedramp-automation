@@ -60,9 +60,9 @@
     <xsl:sequence select="$path"/>
 </xsl:function>
 
-<xsl:function name="lv:validate-values">
-    <xsl:param name="value-set" as="element()" />
-    <xsl:param name="value" as="xs:anyAtomicType" />
+<xsl:function name="lv:validate-value">
+    <xsl:param name="value-set" as="element()"/>
+    <xsl:param name="value" as="xs:anyAtomicType"/>
     <xsl:variable name="values" select="$value-set/f:allowed-values/f:enum/@value"/>
     <xsl:choose>
         <!-- If allow-other is set, anything is valid. -->
