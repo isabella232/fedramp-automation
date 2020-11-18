@@ -59,10 +59,10 @@
 <xsl:function name="lv:validate-values">
     <xsl:param name="value-set" as="element()" />
     <xsl:param name="value" as="xs:anyAtomicType" />
-    <xsl:variable name="values" select="$value-set/*[local-name() = 'allowed-values']/*[local-name() = 'enum']/@value"/>
+    <xsl:variable name="values" select="$value-set/f:allowed-values/f:enum/@value"/>
     <xsl:choose>
         <!-- If allow-other is set, anything is valid. -->
-        <xsl:when test="$value-set/*[local-name() = 'allowed-values']/@allow-other='no' and $value = $values"/>
+        <xsl:when test="$value-set/f:allowed-values/@allow-other='no' and $value = $values"/>
         <xsl:otherwise>
             <xsl:value-of select="$values" />
         </xsl:otherwise>
