@@ -55,6 +55,10 @@
 <xsl:variable name="selected-profile" select="doc(resolve-uri($selected-profile-href))"/>
 
 
+<xsl:function name="lv:sensitivity-level">
+    <xsl:variable name="path" select="$global-context-item/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level"/>
+    <xsl:sequence select="$path"/>
+</xsl:function>
 
 <xsl:function name="lv:validate-values">
     <xsl:param name="value-set" as="element()" />
