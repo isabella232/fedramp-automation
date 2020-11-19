@@ -71,7 +71,7 @@
     <xsl:sequence select="$path"/>
 </xsl:function>
 
-<xsl:function name="lv:validate-value">
+<xsl:function name="lv:correct">
     <xsl:param name="value-set" as="element()"/>
     <xsl:param name="value" as="xs:anyAtomicType"/>
     <xsl:variable name="values" select="$value-set/f:allowed-values/f:enum/@value"/>
@@ -130,12 +130,12 @@
 
     <!-- <sch:rule context="/o:system-security-plan/o:control-implementation/o:implemented-requirement">
         <sch:let name="status" value="./o:annotation[@name='implementation-status']/@value"/>
-        <sch:let name="corrections" value="lv:validate-value($fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status'], $status)"/>
+        <sch:let name="corrections" value="lv:correct($fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status'], $status)"/>
         <sch:assert id="invalid-implementation-status" test="not(exists($corrections))">Invalid status '<sch:value-of select="$status"/>' for <sch:value-of select="./@control-id"/>, must be <sch:value-of select="$corrections"/></sch:assert>
     </sch:rule> -->
 
     <sch:rule context="/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level">
-        <sch:let name="corrections" value="lv:validate-value($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], lv:if-empty-default(lv:sensitivity-level(), 'none'))"/>
+        <sch:let name="corrections" value="lv:correct($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], lv:if-empty-default(lv:sensitivity-level(), 'none'))"/>
         <sch:assert id="invalid-security-sensitivity-level" test="not(exists($corrections))"><sch:value-of select="./name()"/> is an invalid value '<sch:value-of select="lv:sensitivity-level()"/>', not an allowed value <sch:value-of select="$corrections"/>.
         </sch:assert>
     </sch:rule>
