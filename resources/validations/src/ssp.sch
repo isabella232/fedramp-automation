@@ -67,7 +67,7 @@
 </xsl:function>
 
 <xsl:function name="lv:sensitivity-level">
-    <xsl:variable name="path" select="$global-context-item/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level"/>
+    <xsl:variable name="path" select="o:system-security-plan/o:system-characteristics/o:security-sensitivity-level"/>
     <xsl:sequence select="$path"/>
 </xsl:function>
 
@@ -104,20 +104,17 @@
     <xsl:value-of select="$result"/>
 </xsl:template> -->
 
-<sch:pattern>
+<!-- <sch:pattern>
     <sch:rule context="/">
         <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
         <sch:assert role="fatal" id="no-security-sensitivity-level" test="boolean(lv:sensitivity-level())">No sensitivty level found.</sch:assert>
     </sch:rule>
-</sch:pattern>
+</sch:pattern> -->
 
 <sch:pattern>
-    <sch:rule context="/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level">
-        <sch:let name="corrections" value="lv:validate-value($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], lv:if-empty-default(lv:sensitivity-level(), 'none'))"/>
-        <sch:assert id="invalid-security-sensitivity-level" test="not(exists($corrections))">Sensitivity is an invalid value <sch:value-of select="lv:sensitivity-level()"/>, not an allowed value <sch:value-of select="$corrections"/>.</sch:assert>
-    </sch:rule>
-
     <sch:rule context="/o:system-security-plan">
+        <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
+        <sch:assert role="fatal" id="no-security-sensitivity-level" test="boolean(lv:sensitivity-level())">No sensitivty level found.</sch:assert>
         <sch:let name="all" value="o:control-implementation/o:implemented-requirement[o:annotation[@name='implementation-status']]"/>
         <sch:let name="planned" value="o:control-implementation/o:implemented-requirement[o:annotation[@name='implementation-status' and @value='planned']]"/>
         <sch:let name="partial" value="o:control-implementation/o:implemented-requirement[o:annotation[@name='implementation-status' and @value='partial']]"/>
@@ -133,6 +130,11 @@
         <sch:let name="missing" value="$required[not(@id = $implemented/@control-id)]"/>
         <sch:report id="each-required-control-report" test="true()">The following <sch:value-of select="count($required)"/><sch:value-of select="if (count($required)=1) then ' control' else ' controls'"/> are required: <sch:value-of select="$required/@id"/></sch:report>
         <sch:assert id="incomplete-implementation-requirements" test="true()">This SSP has not implemented <sch:value-of select="count($missing)"/><sch:value-of select="if (count($missing)=1) then ' control' else ' controls'"/>: <sch:value-of select="$missing/@id"/></sch:assert>
+    </sch:rule>
+
+    <sch:rule context="/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level">
+        <sch:let name="corrections" value="lv:validate-value($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], lv:if-empty-default(lv:sensitivity-level(), 'none'))"/>
+        <sch:assert id="invalid-security-sensitivity-level" test="not(exists($corrections))">Sensitivity is an invalid value '<sch:value-of select="lv:sensitivity-level()"/>', not an allowed value <sch:value-of select="$corrections"/>.</sch:assert>
     </sch:rule>
 </sch:pattern>
 </sch:schema>
