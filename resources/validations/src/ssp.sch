@@ -104,13 +104,6 @@
     <xsl:value-of select="$result"/>
 </xsl:template> -->
 
-<!-- <sch:pattern>
-    <sch:rule context="/">
-        <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
-        <sch:assert role="fatal" id="no-security-sensitivity-level" test="boolean(lv:sensitivity-level())">No sensitivty level found.</sch:assert>
-    </sch:rule>
-</sch:pattern> -->
-
 <sch:pattern>
     <sch:rule context="/o:system-security-plan">
         <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
