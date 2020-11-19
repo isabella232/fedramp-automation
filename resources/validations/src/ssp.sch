@@ -85,6 +85,25 @@
     </xsl:choose>
 </xsl:function>
 
+<xsl:function name="lv:format-allowed-values">
+    <xsl:param name="values" as="node()"/>
+    <xsl:param name="separator" as="xs:string"/>
+    <xsl:value-of select="string-join(($values), $separator)"/>
+</xsl:function>
+
+<!--     
+<xsl:call-template name="lv:allowed-values-default">
+        <xsl:with-param name="values" select="$values" />
+    </xsl:call-template>
+</xsl:function>
+ -->
+<!-- <xsl:template name="lv:allowed-values-default">
+    <xsl:param name="values"><allowed-values/></xsl:param>
+    <xsl:param name="separator" select="','"/>
+    <xsl:variable name="result" select="string-join($values, $separator)"/>
+    <xsl:message expand-text="yes">values: {$values} ; separator: {$separator} ; result: {$result}</xsl:message>
+    <xsl:value-of select="$result"/>
+</xsl:template> -->
 
 <sch:pattern>
     <sch:rule context="/">
