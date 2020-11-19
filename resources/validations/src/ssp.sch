@@ -54,6 +54,18 @@
 <xsl:variable name="selected-profile-href" select="key('profile-lookup', lv:sensitivity-level(), $profile-map)/@href"/>
 <xsl:variable name="selected-profile" select="doc(resolve-uri($selected-profile-href))"/>
 
+<xsl:function name="lv:if-empty-default">
+    <xsl:param name="element"/>
+    <xsl:param name="default" as="xs:anyAtomicType"/>
+    <xsl:choose>
+        <xsl:when test="not($element/*) and normalize-space($element)=''">
+            <xsl:value-of select="$default"/>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="$element"/>
+        </xsl:otherwise>
+    </xsl:choose>
+</xsl:function>
 
 <xsl:function name="lv:sensitivity-level">
     <xsl:variable name="path" select="$global-context-item/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level"/>
