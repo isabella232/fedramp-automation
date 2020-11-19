@@ -40,8 +40,8 @@
 <xsl:param name="fedramp-registry-href" select="'../../xml?select=*.xml'" />
 <xsl:variable name="fedramp-registry" select="collection($fedramp-registry-href)"/>
 
-<sch:let name="sensitivity-levels" value="$fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level']/f:allowed-values/f:enum/@value"/>
-<sch:let name="implementation-statuses" value="$fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status']/f:allowed-values/f:enum/@value"/>
+<!-- <sch:let name="sensitivity-levels" value="$fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level']/f:allowed-values/f:enum/@value"/>
+<sch:let name="implementation-statuses" value="$fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status']/f:allowed-values/f:enum/@value"/> -->
 
 <xsl:variable name="profile-map">
     <profile level="low" href="../../../baselines/xml/FedRAMP_LOW-baseline-resolved-profile_catalog.xml"/>
@@ -67,7 +67,7 @@
 </xsl:function>
 
 <xsl:function name="lv:sensitivity-level">
-    <xsl:variable name="path" select="o:system-security-plan/o:system-characteristics/o:security-sensitivity-level"/>
+    <xsl:variable name="path" select="$global-context-item/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level"/>
     <xsl:sequence select="$path"/>
 </xsl:function>
 
@@ -75,20 +75,23 @@
     <xsl:param name="value-set" as="element()"/>
     <xsl:param name="value" as="xs:anyAtomicType"/>
     <xsl:variable name="values" select="$value-set/f:allowed-values/f:enum/@value"/>
+    <xsl:message expand-text="yes">values: {$values}; value: {$value};</xsl:message>
     <xsl:choose>
         <!-- If allow-other is set, anything is valid. -->
         <xsl:when test="$value-set/f:allowed-values/@allow-other='no' and $value = $values"/>
         <xsl:otherwise>
-            <xsl:value-of select="$values" />
+            <xsl:value-of select="$values" separator=", "/>
         </xsl:otherwise>
     </xsl:choose>
 </xsl:function>
 
+<!-- 
 <xsl:function name="lv:format-allowed-values">
-    <xsl:param name="values" as="node()"/>
+    <xsl:param name="values"/>
     <xsl:param name="separator" as="xs:string"/>
-    <xsl:value-of select="string-join(($values), $separator)"/>
+    <xsl:value-of select="$values" separator=", "/>
 </xsl:function>
+ -->
 
 <!--     
 <xsl:call-template name="lv:allowed-values-default">
@@ -125,9 +128,16 @@
         <sch:assert id="incomplete-implementation-requirements" test="true()">This SSP has not implemented <sch:value-of select="count($missing)"/><sch:value-of select="if (count($missing)=1) then ' control' else ' controls'"/>: <sch:value-of select="$missing/@id"/></sch:assert>
     </sch:rule>
 
+    <!-- <sch:rule context="/o:system-security-plan/o:control-implementation/o:implemented-requirement">
+        <sch:let name="status" value="./o:annotation[@name='implementation-status']/@value"/>
+        <sch:let name="corrections" value="lv:validate-value($fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status'], $status)"/>
+        <sch:assert id="invalid-implementation-status" test="not(exists($corrections))">Invalid status '<sch:value-of select="$status"/>' for <sch:value-of select="./@control-id"/>, must be <sch:value-of select="$corrections"/></sch:assert>
+    </sch:rule> -->
+
     <sch:rule context="/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level">
         <sch:let name="corrections" value="lv:validate-value($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], lv:if-empty-default(lv:sensitivity-level(), 'none'))"/>
-        <sch:assert id="invalid-security-sensitivity-level" test="not(exists($corrections))">Sensitivity is an invalid value '<sch:value-of select="lv:sensitivity-level()"/>', not an allowed value <sch:value-of select="$corrections"/>.</sch:assert>
+        <sch:assert id="invalid-security-sensitivity-level" test="not(exists($corrections))"><sch:value-of select="./name()"/> is an invalid value '<sch:value-of select="lv:sensitivity-level()"/>', not an allowed value <sch:value-of select="$corrections"/>.
+        </sch:assert>
     </sch:rule>
 </sch:pattern>
 </sch:schema>
