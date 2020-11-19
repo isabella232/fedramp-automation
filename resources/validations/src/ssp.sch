@@ -39,7 +39,6 @@
 <xsl:param as="document-node(element(o:system-security-plan))" name="global-context-item" select="." />
 <xsl:param name="fedramp-registry-href" select="'../../xml?select=*.xml'" />
 <xsl:variable name="fedramp-registry" select="collection($fedramp-registry-href)"/>
-<xsl:variable name="selected-sensitivty-level" select="$global-context-item/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level"/>
 
 <sch:let name="sensitivity-levels" value="$fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level']/f:allowed-values/f:enum/@value"/>
 <sch:let name="implementation-statuses" value="$fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status']/f:allowed-values/f:enum/@value"/>
@@ -108,26 +107,26 @@
 <sch:pattern>
     <sch:rule context="/">
         <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
-        <sch:assert role="fatal" id="no-security-sensitivity-level" test="boolean(lv:sensitivity-level())">No sensitivty level found '<sch:value-of select="lv:sensitivity-level()"/>'</sch:assert>
+        <sch:assert role="fatal" id="no-security-sensitivity-level" test="boolean(lv:sensitivity-level())">No sensitivty level found.</sch:assert>
     </sch:rule>
 </sch:pattern>
 
 <sch:pattern>
     <sch:rule context="/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level">
-        <sch:assert id="no-security-sensitivity-level" test="$selected-sensitivty-level">No sensitivty level found from XPath query.</sch:assert>
-        <sch:assert id="invalid-security-sensitivity-level" test=". = $sensitivity-levels"><sch:value-of select="./name()"/> is an invalid value <sch:value-of select="."/>, not from <sch:value-of select="$sensitivity-levels" /></sch:assert>
+        <sch:let name="corrections" value="lv:validate-value($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], lv:if-empty-default(lv:sensitivity-level(), 'none'))"/>
+        <sch:assert id="invalid-security-sensitivity-level" test="not(exists($corrections))">Sensitivity is an invalid value <sch:value-of select="lv:sensitivity-level()"/>, not an allowed value <sch:value-of select="$corrections"/>.</sch:assert>
     </sch:rule>
-</sch:pattern>
-<sch:pattern>
+
     <sch:rule context="/o:system-security-plan">
         <sch:let name="all" value="o:control-implementation/o:implemented-requirement[o:annotation[@name='implementation-status']]"/>
         <sch:let name="planned" value="o:control-implementation/o:implemented-requirement[o:annotation[@name='implementation-status' and @value='planned']]"/>
         <sch:let name="partial" value="o:control-implementation/o:implemented-requirement[o:annotation[@name='implementation-status' and @value='partial']]"/>
         <sch:assert id="invalid-implemented-requirements-count" test="count($all) > 0">There are no control implementations with statuses set.</sch:assert> 
-        <sch:report id="partial-requirements-report" test="true()">There are <sch:value-of select="count($partial)"/> partial<sch:value-of select="if (count($partial)=1) then ' control implementation' else ' control implementations'"/>.</sch:report>
-        <sch:report id="planned-requirements-report" test="true()">There are <sch:value-of select="count($planned)"/> planned<sch:value-of select="if (count($planned)=1) then ' control implementation' else ' control implementations'"/>.</sch:report>
-        <sch:report id="all-requirements-report" test="true()">There are <sch:value-of select="count($all)"/> total<sch:value-of select="if (count($all)=1) then ' control implementation' else ' control implementations'"/>.</sch:report>
+        <sch:report id="partial-requirements-report" test="count($partial)">There are <sch:value-of select="count($partial)"/> partial<sch:value-of select="if (count($partial)=1) then ' control implementation' else ' control implementations'"/>.</sch:report>
+        <sch:report id="planned-requirements-report" test="count($planned)">There are <sch:value-of select="count($planned)"/> planned<sch:value-of select="if (count($planned)=1) then ' control implementation' else ' control implementations'"/>.</sch:report>
+        <sch:report id="all-requirements-report" test="count($all)">There are <sch:value-of select="count($all)"/> total<sch:value-of select="if (count($all)=1) then ' control implementation' else ' control implementations'"/>.</sch:report>
     </sch:rule>
+
     <sch:rule context="/o:system-security-plan/o:control-implementation">
         <sch:let name="required" value="$selected-profile/*//o:control"/>
         <sch:let name="implemented" value="o:implemented-requirement"/>
