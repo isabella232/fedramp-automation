@@ -1,6 +1,7 @@
 <sch:schema xmlns:sch="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:o="http://csrc.nist.gov/ns/oscal/1.0">
+    xmlns:o="http://csrc.nist.gov/ns/oscal/1.0"
+    xpath-default-namespace="http://csrc.nist.gov/ns/oscal/1.0">
 
 <sch:ns prefix="f"     uri="https://fedramp.gov/ns/oscal"/>
 <sch:ns prefix="o"     uri="http://csrc.nist.gov/ns/oscal/1.0"/>
@@ -36,12 +37,11 @@
 
     XPDY0002  Finding root of root/key-name the context item is absent
 -->
+<xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+
 <xsl:param as="document-node(element(o:system-security-plan))" name="global-context-item" select="." />
 <xsl:param name="fedramp-registry-href" select="'../../xml?select=*.xml'" />
 <xsl:variable name="fedramp-registry" select="collection($fedramp-registry-href)"/>
-
-<!-- <sch:let name="sensitivity-levels" value="$fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level']/f:allowed-values/f:enum/@value"/>
-<sch:let name="implementation-statuses" value="$fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status']/f:allowed-values/f:enum/@value"/> -->
 
 <xsl:variable name="profile-map">
     <profile level="low" href="../../../baselines/xml/FedRAMP_LOW-baseline-resolved-profile_catalog.xml"/>
@@ -73,9 +73,8 @@
 
 <xsl:function name="lv:correct">
     <xsl:param name="value-set" as="element()"/>
-    <xsl:param name="value" as="xs:anyAtomicType"/>
+    <xsl:param name="value"/>
     <xsl:variable name="values" select="$value-set/f:allowed-values/f:enum/@value"/>
-    <xsl:message expand-text="yes">values: {$values}; value: {$value};</xsl:message>
     <xsl:choose>
         <!-- If allow-other is set, anything is valid. -->
         <xsl:when test="$value-set/f:allowed-values/@allow-other='no' and $value = $values"/>
@@ -85,30 +84,41 @@
     </xsl:choose>
 </xsl:function>
 
-<!-- 
-<xsl:function name="lv:format-allowed-values">
-    <xsl:param name="values"/>
-    <xsl:param name="separator" as="xs:string"/>
-    <xsl:value-of select="$values" separator=", "/>
+<!--
+    For a given properties and attributes with OSCAL, there will be enumerable
+    lists of items where do not wish to hard code the allowed-values/@enum 
+    values in each Schematron rule. We will to abstract the assertions 
+-->
+<xsl:function name="lv:collect">
+    <xsl:param name="value-set" as="element()*"/>
+    <xsl:param name="element" as="element()*"/>
+    <xsl:variable name="results" as="node()*">
+        <xsl:call-template name="value-set-pattern">
+            <xsl:with-param name="value-set" select="$value-set"/>
+            <xsl:with-param name="element" select="$element"/>
+        </xsl:call-template>
+    </xsl:variable>
+    <xsl:sequence select="$results"/>
 </xsl:function>
- -->
 
-<!--     
-<xsl:call-template name="lv:allowed-values-default">
-        <xsl:with-param name="values" select="$values" />
-    </xsl:call-template>
-</xsl:function>
- -->
-<!-- <xsl:template name="lv:allowed-values-default">
-    <xsl:param name="values"><allowed-values/></xsl:param>
-    <xsl:param name="separator" select="','"/>
-    <xsl:variable name="result" select="string-join($values, $separator)"/>
-    <xsl:message expand-text="yes">values: {$values} ; separator: {$separator} ; result: {$result}</xsl:message>
-    <xsl:value-of select="$result"/>
-</xsl:template> -->
+<xsl:template name="value-set-pattern" as="element()">
+    <xsl:param name="value-set" as="element()*"/>
+    <xsl:param name="element" as="element()*"/>
+    <xsl:variable name="ok-values" select="$value-set/f:allowed-values/f:enum/@value"/>
+    <analysis id="{$value-set/@name}">
+        <reports>
+            <xsl:for-each select="$ok-values">
+                <report id="{current()}" match="{count($element[@value=current()])}"> 
+                </report>
+            </xsl:for-each>
+        </reports>
+    </analysis>
+</xsl:template>
 
 <sch:pattern>
     <sch:rule context="/o:system-security-plan">
+        <sch:let name="results" value="lv:collect($fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status'], //o:implemented-requirement/o:annotation[@name='implementation-status'])"/>
+        <sch:report id="stats-control-requirements" test="exists($results)"><xsl:sequence select="$results"/></sch:report>
         <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
         <sch:assert role="fatal" id="no-security-sensitivity-level" test="boolean(lv:sensitivity-level())">No sensitivty level found.</sch:assert>
         <sch:let name="all" value="o:control-implementation/o:implemented-requirement[o:annotation[@name='implementation-status']]"/>
@@ -128,13 +138,13 @@
         <sch:assert id="incomplete-implementation-requirements" test="true()">This SSP has not implemented <sch:value-of select="count($missing)"/><sch:value-of select="if (count($missing)=1) then ' control' else ' controls'"/>: <sch:value-of select="$missing/@id"/></sch:assert>
     </sch:rule>
 
-    <!-- <sch:rule context="/o:system-security-plan/o:control-implementation/o:implemented-requirement">
+    <sch:rule context="/o:system-security-plan/o:control-implementation/o:implemented-requirement">
         <sch:let name="status" value="./o:annotation[@name='implementation-status']/@value"/>
         <sch:let name="corrections" value="lv:correct($fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status'], $status)"/>
         <sch:assert id="invalid-implementation-status" test="not(exists($corrections))">Invalid status '<sch:value-of select="$status"/>' for <sch:value-of select="./@control-id"/>, must be <sch:value-of select="$corrections"/></sch:assert>
-    </sch:rule> -->
+    </sch:rule>
 
-    <sch:rule context="/o:system-security-plan/o:system-characteristics/o:security-sensitivity-level">
+    <sch:rule context="//o:security-sensitivity-level">
         <sch:let name="corrections" value="lv:correct($fedramp-registry/f:fedramp-values/f:value-set[@name='security-sensitivity-level'], lv:if-empty-default(lv:sensitivity-level(), 'none'))"/>
         <sch:assert id="invalid-security-sensitivity-level" test="not(exists($corrections))"><sch:value-of select="./name()"/> is an invalid value '<sch:value-of select="lv:sensitivity-level()"/>', not an allowed value <sch:value-of select="$corrections"/>.
         </sch:assert>
