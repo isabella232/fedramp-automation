@@ -72,7 +72,7 @@
 </xsl:function>
 
 <xsl:function name="lv:correct">
-    <xsl:param name="value-set" as="element()"/>
+    <xsl:param name="value-set" as="element()+"/>
     <xsl:param name="value"/>
     <xsl:variable name="values" select="$value-set/f:allowed-values/f:enum/@value"/>
     <xsl:choose>
@@ -90,7 +90,7 @@
     values in each Schematron rule. We will to abstract the assertions 
 -->
 <xsl:function name="lv:collect">
-    <xsl:param name="value-set" as="element()*"/>
+    <xsl:param name="value-set" as="element()+"/>
     <xsl:param name="element" as="element()*"/>
     <xsl:variable name="results" as="node()*">
         <xsl:call-template name="value-set-pattern">
