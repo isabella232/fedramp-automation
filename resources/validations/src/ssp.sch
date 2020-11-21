@@ -120,8 +120,9 @@
         <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
         <sch:assert role="fatal" id="no-security-sensitivity-level" test="boolean(lv:sensitivity-level())">No sensitivty level found.</sch:assert>
         <sch:let name="results" value="lv:collect($fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status'], //o:implemented-requirement/o:annotation[@name='implementation-status'])"/>
+        <sch:let name="total" value="sum($results//reports/report/@count)"/>
         <sch:report id="stats-control-requirements" test="exists($results)"><xsl:sequence select="$results"/></sch:report>
-        <sch:report id="all-requirements-report" test="count($all)">There are <sch:value-of select="count($all)"/> total<sch:value-of select="if (count($all)=1) then ' control implementation' else ' control implementations'"/>.</sch:report>
+        <sch:report id="all-requirements-report" test="$total">There are <sch:value-of select="$total"/> total<sch:value-of select="if ($total=1) then ' control implementation' else ' control implementations'"/>.</sch:report>
     </sch:rule>
 
     <sch:rule context="/o:system-security-plan/o:control-implementation">
