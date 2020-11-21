@@ -108,7 +108,7 @@
     <analysis id="{$value-set/@name}">
         <reports>
             <xsl:for-each select="$ok-values">
-                <report id="{current()}" match="{count($element[@value=current()])}"> 
+                <report id="{current()}" count="{count($element[@value=current()])}"> 
                 </report>
             </xsl:for-each>
         </reports>
