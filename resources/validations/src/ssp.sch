@@ -106,7 +106,7 @@
     <xsl:param name="element" as="element()*"/>
     <xsl:variable name="ok-values" select="$value-set/f:allowed-values/f:enum/@value"/>
     <analysis id="{$value-set/@name}">
-        <reports>
+        <reports count="{count($element)}">
             <xsl:for-each select="$ok-values">
                 <report id="{current()}" count="{count($element[@value=current()])}"> 
                 </report>
