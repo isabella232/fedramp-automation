@@ -89,11 +89,11 @@
     lists of items where do not wish to hard code the allowed-values/@enum 
     values in each Schematron rule. We will to abstract the assertions 
 -->
-<xsl:function name="lv:collect">
+<xsl:function name="lv:analyze">
     <xsl:param name="value-set" as="element()+"/>
     <xsl:param name="element" as="element()*"/>
     <xsl:variable name="results" as="node()*">
-        <xsl:call-template name="value-set-pattern">
+        <xsl:call-template name="analysis-template">
             <xsl:with-param name="value-set" select="$value-set"/>
             <xsl:with-param name="element" select="$element"/>
         </xsl:call-template>
@@ -119,7 +119,7 @@
     <sch:rule context="/o:system-security-plan">
         <sch:assert role="fatal" id="no-fedramp-registry-values" test="exists($fedramp-registry/f:fedramp-values)">The FedRAMP Registry values are not present, this configuration is invalid.</sch:assert>
         <sch:assert role="fatal" id="no-security-sensitivity-level" test="boolean(lv:sensitivity-level())">No sensitivty level found.</sch:assert>
-        <sch:let name="results" value="lv:collect($fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status'], //o:implemented-requirement/o:annotation[@name='implementation-status'])"/>
+        <sch:let name="results" value="lv:analyze($fedramp-registry/f:fedramp-values/f:value-set[@name='control-implementation-status'], //o:implemented-requirement/o:annotation[@name='implementation-status'])"/>
         <sch:let name="total" value="sum($results//reports/report/@count)"/>
         <sch:report id="stats-control-requirements" test="exists($results)"><xsl:sequence select="$results"/></sch:report>
         <sch:report id="all-requirements-report" test="$total">There are <sch:value-of select="$total"/> total<sch:value-of select="if ($total=1) then ' control implementation' else ' control implementations'"/>.</sch:report>
