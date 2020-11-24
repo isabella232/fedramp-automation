@@ -101,6 +101,16 @@
     <xsl:sequence select="$results"/>
 </xsl:function>
 
+<xsl:function name="lv:report" as="xs:string">
+    <xsl:param name="analysis" as="element()*"/>
+    <xsl:variable name="results" as="xs:string">
+        <xsl:call-template name="report-template">
+            <xsl:with-param name="analysis" select="$analysis"/>
+        </xsl:call-template>
+    </xsl:variable>
+    <xsl:value-of select="$results"/>
+</xsl:function>
+
 <xsl:template name="analysis-template" as="element()">
     <xsl:param name="value-set" as="element()*"/>
     <xsl:param name="element" as="element()*"/>
