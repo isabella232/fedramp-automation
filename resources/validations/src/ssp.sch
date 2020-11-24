@@ -105,10 +105,11 @@
     <xsl:param name="value-set" as="element()*"/>
     <xsl:param name="element" as="element()*"/>
     <xsl:variable name="ok-values" select="$value-set/f:allowed-values/f:enum/@value"/>
-    <analysis id="{$value-set/@name}" name="{$value-set/@name}" formal-name="{$value-set/f:formal-name}">
+    <analysis name="{$value-set/@name}" formal-name="{$value-set/f:formal-name}" description="{$value-set/f:description}">
         <reports count="{count($element)}">
             <xsl:for-each select="$ok-values">
-                <report id="{current()}" count="{count($element[@value=current()])}"> 
+                <xsl:variable name="match" select="$element[@value=current()]"/>
+                <report id="{current()}" count="{count($match)}"> 
                 </report>
             </xsl:for-each>
         </reports>
