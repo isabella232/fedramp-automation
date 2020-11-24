@@ -101,11 +101,11 @@
     <xsl:sequence select="$results"/>
 </xsl:function>
 
-<xsl:template name="value-set-pattern" as="element()">
+<xsl:template name="analysis-template" as="element()">
     <xsl:param name="value-set" as="element()*"/>
     <xsl:param name="element" as="element()*"/>
     <xsl:variable name="ok-values" select="$value-set/f:allowed-values/f:enum/@value"/>
-    <analysis id="{$value-set/@name}">
+    <analysis id="{$value-set/@name}" name="{$value-set/@name}" formal-name="{$value-set/f:formal-name}">
         <reports count="{count($element)}">
             <xsl:for-each select="$ok-values">
                 <report id="{current()}" count="{count($element[@value=current()])}"> 
